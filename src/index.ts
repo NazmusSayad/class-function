@@ -57,9 +57,16 @@ function bind(fn: Function, thisArg: any) {
   }
 }
 
-function createClassFunction<T>(ClassConstructor: Function, ...args: any[]): T {
+function createClassFunction<T>(
+  ClassConstructor: Function,
+  root: string | Function,
+  ...args: any[]
+): T {
   const context = new (ClassConstructor as any)(...args)
-  const instance = bind(ClassConstructor.prototype.default, context)
+  const instance = bind(
+    typeof root === 'string' ? ClassConstructor.prototype[root] : root,
+    context
+  )
 
   // Copy prototype to instance
   extend(instance, ClassConstructor.prototype, context, { allOwnKeys: true })
